@@ -158,7 +158,7 @@ function lxaPack(name){
     .then(lxDecode).then(b=>{ LXA.bufs.set(name,b); return b; }).catch(e=>{ LXA.load.delete(name); throw new Error(name+': '+(e&&e.message||e)); }));
   return LXA.load.get(name); }
 /* the clip of a word: [pack, start, length] or null */
-function lxaClip(w,lang){ const x=LXA.idx&&LXA.idx.w[w]; if(!x) return null; return lang==='ja'?[LXA.idx.packs[x[0]],x[1],x[2]]:[LXA.idx.packs[x[0]],x[3],x[4]]; }
+function lxaClip(w,lang){ const x=LXA.idx&&LXA.idx.w[w]; if(!x) return null; return lang==='ja'?[LXA.idx.packs[x[0]],x[1],x[2]]:[LXA.idx.packs[x[3]],0,x[4]]; }
 function lxaCue(say){ const I=LXA.idx; if(!I) return []; return say.split(/\.\s*/).filter(Boolean).map(p=>I.cue[p]?['cues.mp3',I.cue[p][0],I.cue[p][1]]:null).filter(Boolean); }
 /* faster or slower speech without changing the pitch (WSOLA: overlapping 32 ms slices, each one placed where it lines up best with the last) */
 function lxStretch(x,r,sr){
@@ -196,7 +196,7 @@ async function lxCueSay(say){
 /* the word packs are loaded before starting; the spoken cues load alongside (until they arrive, parts are marked by the chime) */
 async function lxaPrep(ws,show){ LXA.err=''; show('Loading…'); const I=await lxaIndex(); if(!I) return false;
   lxaPack('cues.mp3').catch(()=>{});
-  const need=[...new Set([].concat(...ws.map(x=>{ const c=lxaClip(x.w,'ja'), f=S.lxs.burst?lxaClipFast(x.w):null; return [c&&c[0], f&&f[0]]; })).filter(Boolean))];
+  const need=[...new Set([].concat(...ws.map(x=>{ const c=lxaClip(x.w,'ja'), e=lxaClip(x.w,'en'), f=S.lxs.burst?lxaClipFast(x.w):null; return [c&&c[0], e&&e[0], f&&f[0]]; })).filter(Boolean))];
   let done=0, bad=[]; show('Loading 0/'+need.length);
   await Promise.all(need.map(n=>lxaPack(n).then(()=>{ show('Loading '+(++done)+'/'+need.length); }).catch(e=>{ bad.push(e.message); })));
   if(bad.length){ LXA.err=bad.join('; '); return false; }
@@ -337,7 +337,8 @@ function lxPaint(){
     const pb=$('#lxPP'); if(pb){ pb.innerHTML=LX.paused?ICO_LXP:ICO_LXPA; pb.setAttribute('aria-label',LX.paused?'Resume':'Pause'); pb.title=LX.paused?'Resume (space)':'Pause (space)'; }
   }
   const bar=$('#lbar');
-  { const hb=$('#lxHd'); if(hb){ const cw=lxCurWord(), on=!!(cw && wbSt(cw.w).hj); hb.setAttribute('aria-pressed',String(on)); hb.classList.toggle('on',on); } }
+  { const hb=$('#lxHd'); if(hb){ const cw=lxCurWord(), on=!!(cw && wbSt(cw.w).hj); hb.setAttribute('aria-pressed',String(on)); hb.classList.toggle('on',on); }
+    const eb=$('#lxEz'); if(eb){ const cw=lxCurWord(), on=!!(cw && easyOf(cw.w)); eb.setAttribute('aria-pressed',String(on)); eb.classList.toggle('on',on); } }
   if(bar){ lxBarVis();
     if(!bar.hidden){ bar.querySelector('.lbw').textContent=w?w.w+'  ·  '+(LX.phase>=1||!je?w.en:''):(LX.label||''); bar.querySelector('.lbt').textContent=lxClock(LX.el);
       const pp=bar.querySelector('[data-lx="pp"]'); pp.innerHTML=LX.paused?ICO_LXP:ICO_LXPA; pp.setAttribute('aria-label',LX.paused?'Resume':'Pause'); } }

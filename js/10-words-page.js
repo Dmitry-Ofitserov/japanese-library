@@ -25,7 +25,7 @@ function lxPanelHTML(){
       '<div class="lxcard"><div class="lxw" id="lxW" lang="ja"></div><div class="lxr" id="lxR" lang="ja"></div><div class="lxe" id="lxE"></div></div>'+
       '<div class="lxbar"><i id="lxFill"></i></div><div class="lxtr"><span id="lxT"></span><span id="lxPc"></span></div>'+
       '<div class="lxc"><button data-lx="prev" aria-label="Previous word" title="Previous word">'+ICO_LXB+'</button><button data-lx="pp" id="lxPP" class="lxbig"></button><button data-lx="next" aria-label="Next word" title="Next word">'+ICO_LXN+'</button><button data-lx="part" aria-label="Skip to the next part" title="Skip to the next part">'+ICO_LXF+'</button><button data-lx="stop" aria-label="Stop" title="Stop">'+ICO_LXS+'</button></div>'+
-      '<div class="lxc2"><button class="hdb" data-lx="hd" id="lxHd" aria-pressed="false" title="Mark this word as hard (reading the Japanese)">Hard</button><button class="hdb" data-lx="perm" title="Permanently learned: never reviewed, and skipped for the rest of this session">∞ Permanent</button></div>'+
+      '<div class="lxc2"><button class="hdb" data-lx="hd" id="lxHd" aria-pressed="false" title="Mark this word as hard (reading the Japanese)">Hard</button><button class="hdb" data-lx="ez" id="lxEz" aria-pressed="false" title="Easy: reviewed only every third round of its block">Easy</button><button class="hdb" data-lx="perm" title="Permanently learned: never reviewed, and skipped for the rest of this session">∞ Permanent</button></div>'+
       '<div class="lxsplit"><div class="lxgs" id="lxSet" aria-label="The words being played"></div><div class="lxkd" id="lxK" aria-label="The kanji of this word"></div></div>'+
       '<div class="lxl" id="lxL"></div>'+
       '<p class="lxnote">Keep the screen on: phones stop the voice when it locks.'+(o.loop?' The session starts again when it ends; stop it when you like.':'')+'</p></div>';
@@ -94,6 +94,7 @@ function lxPermCur(){
   renderLxPanel(); if(!LX.paused) lxGo();
 }
 function lxHardCur(){ const x=lxCurWord(); if(!x) return; const on=!wbSt(x.w).hj; wbSetHard(x.w,'f',on); wbPaintCell(x.w); lxPaint(); toast(x.w+(on?' marked as hard':' is no longer hard')); }
+function lxEasyCur(){ const x=lxCurWord(); if(!x) return; setEasy(x.w,!easyOf(x.w)); wbPaintCell(x.w); lxPaint(); toast(x.w+(easyOf(x.w)?' marked as easy':' is no longer easy')); }
 function lxBarVis(){ const bar=$('#lbar'); if(!bar) return; let vis=false; const p=$('#lxp'); if(S.view==='words' && p){ const r=p.getBoundingClientRect(); vis=r.bottom>60 && r.top<innerHeight-40; } bar.hidden=!LX.on || vis; }
 addEventListener('scroll',()=>{ if(LX.on) lxBarVis(); },{passive:true});
 document.addEventListener('click',e=>{
@@ -151,7 +152,7 @@ document.addEventListener('click',e=>{
     S.lxsel = S.lxsel.includes(k) ? S.lxsel.filter(x=>x!==k) : S.lxsel.concat(k).sort((x,y)=>x-y); lxSelSave();
     LX.doneMsg=''; wbPaintSel(); renderLxPanel(); return; }
   const x=e.target.closest('[data-lx]'); if(!x) return; const a=x.dataset.lx;
-  if(a==='start') lxStart('full'); else if(a==='shuf') lxStart('shuf'); else if(a==='hard') lxStart('hard'); else if(a==='perm') lxPermCur(); else if(a==='hd') lxHardCur(); else if(a==='pp') LX.paused?lxResume():lxPause(); else if(a==='stop') lxStop();
+  if(a==='start') lxStart('full'); else if(a==='shuf') lxStart('shuf'); else if(a==='hard') lxStart('hard'); else if(a==='perm') lxPermCur(); else if(a==='hd') lxHardCur(); else if(a==='ez') lxEasyCur(); else if(a==='pp') LX.paused?lxResume():lxPause(); else if(a==='stop') lxStop();
   else if(a==='next') lxJump(1); else if(a==='prev') lxJump(-1); else if(a==='part') lxJump('part');
   else if(a==='open'){ nav('words'); setTimeout(()=>scrollTo(0,0),60); }
   else if(a==='reset'){ S.lxs=Object.assign({},LXD); lxSave(); renderListen(); }
