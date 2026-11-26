@@ -58,11 +58,13 @@ async function openCloudStore(){
   try{
     if(!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
     const fs = firebase.firestore(), auth = firebase.auth();
-    if(auth.currentUser) return fsStore(fs, auth.currentUser.uid);
+    /* the first onAuthStateChanged callback carries the restored saved session (or null) —
+       only show the sign-in card once that check has come back empty */
+    const saved = await new Promise(res=>{ const un=auth.onAuthStateChanged(x=>{ un(); res(x); }); });
+    if(saved) return fsStore(fs, saved.uid);
     return await new Promise(resolve=>{
       let done = false;
-      const finish = v => { if(done) return; done=true; sub&&sub(); resolve(v); };
-      const sub = auth.onAuthStateChanged(u=>{ if(u) finish(fsStore(fs,u.uid)); });
+      const finish = v => { if(done) return; done=true; resolve(v); };
       authOverlay(u=>finish(u ? fsStore(fs,u.uid) : null), auth);
     });
   }catch(e){ note('Sync off: Firebase init failed — '+(e&&e.message||e)); return null; }
