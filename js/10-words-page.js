@@ -115,24 +115,49 @@ function wbMiniHTML(items,bl,sel){
     h+='<div class="wmw"><div class="wmsq">';
     for(let B=b/20;B<b/20+25;B++){ const k=bl[B], ch=items.slice(B*20,B*20+20);
       if(!ch.length){ h+='<i class="wmb wme"></i>'; continue; }
-      h+='<button class="wmb'+(k?wbCls(k):'')+(sel.has(B)?' sel':'')+'" data-mb="'+B+'" aria-label="Block '+(B+1)+'">'+ch.map(x=>{ const w=x.e.word, st=wbSt(w);
-        return '<i class="'+(S.permw.has(w)?'p':st.hj?'h':S.easyw.has(w)?'e':(x.g && !st.k)?'g':'l')+'"></i>'; }).join('')+'<em>'+(B+1)+'</em></button>'; }
+      const td=today(), lcD=k&&k.lc?Math.floor((k.lc-36e5)/864e5):null, passed=k&&k.lc?td-lcD:null, till=k&&k.due!=null?k.due-td:null;
+      const frac=k&&k.act&&till!=null?(till<=0?1:Math.min(1,Math.max(.05,passed/(passed+till)))):0;
+      h+='<button class="wmb'+(k?wbCls(k):'')+(sel.has(B)?' sel':'')+'" data-mb="'+B+'" aria-label="Block '+(B+1)+'">'+
+        '<b class="wbf'+(frac>=1?' due':'')+'"'+(frac?' style="width:'+(frac*100).toFixed(1)+'%"':'')+'></b>'+
+        ch.map(x=>{ const w=x.e.word, st=wbSt(w);
+        return '<i class="'+(S.permw.has(w)?'p':st.hj?'h':S.easyw.has(w)?'e':(x.g && !st.k)?'g':'l')+'"></i>'; }).join('')+
+        '<em>'+(B+1)+'</em>'+(k&&k.cnt?'<b class="wc">&times;'+k.cnt+'</b>':'')+
+        (passed!=null?'<i class="wd">'+passed+'/'+Math.max(0,till==null?0:till)+'</i>':'')+'</button>'; }
     h+='</div><div class="wmcap"><b>'+(B0+1)+'–'+last+'</b>'+(nd?'<span class="du">'+nd+' due</span>':'')+(nn?'<span class="nw">'+nn+' new</span>':'')+(np?'<span class="pk">'+np+' picked</span>':'')+(nh?'<span class="hd">'+nh+' hard</span>':'')+'</div></div>';
   }
   return h+'</div>';
 }
-function wbMiniTip(e){
-  const c=e.target.closest && e.target.closest('.wmb[data-mb]'); if(!c) return false;
-  const B=+c.dataset.mb, k=wbBlocks()[B]; if(!k){ mtip.hidden=true; return true; }
-  const td=today(), ch=k.ch;
-  mtip.innerHTML='<span class="mn">#'+(B+1)+'</span><span class="jp" lang="ja">'+esc(ch[0].e.word)+'</span><span>'+esc(!k.act?'not started':k.isDue?(k.nn?k.nn+' new · due':'due'):'in '+(k.due-td)+'d')+(k.cnt?' · ×'+k.cnt:'')+(k.hj?' · '+k.hj+' hard':'')+((S.rvt[ch[0].e.word]||0)>=1000?' · ⏱ '+lxHM((S.rvt[ch[0].e.word]||0)/1000):'')+(S.lxsel.includes(B)?' · picked':'')+'</span>'; mtip.hidden=false;
+let wbHold=0, wbQuick=0;
+function wbMiniShow(c){
+  const B=+c.dataset.mb, k=wbBlocks()[B], td=today(); if(!k){ mtip.hidden=true; return; }
+  const lcD=k.lc?Math.floor((k.lc-36e5)/864e5):null, passed=k.lc?td-lcD:null, till=k.due!=null?k.due-td:null;
+  const head='#'+(B+1)+(k.act?' · '+(k.isDue?'due':(till!=null?'in '+till+'d':''))+(k.cnt?' · ×'+k.cnt:'')+(passed!=null?' · '+passed+'d since':''):' · not started')+(k.hj?' · '+k.hj+' hard':'')+(S.lxsel.includes(B)?' · picked':'');
+  const rows=k.ch.map(x=>{ const e=x.e, st=wbSt(e.word);
+    const cls=S.permw.has(e.word)?'p':st.hj?'h':S.easyw.has(e.word)?'e':(x.g && !st.k)?'g':'l';
+    return '<div class="mrow"><i class="'+cls+'"></i><span lang="ja">'+esc(e.word)+'</span><small>'+esc(((e.gloss||(e.means&&e.means[0])||'')+' · '+(e.reading||'')).slice(0,30))+'</small></div>'; }).join('');
+  mtip.innerHTML='<div class="mnh">'+head+'</div><div class="mlw">'+rows+'</div>'; mtip.hidden=false;
   const r=$('.wmini').getBoundingClientRect(), h=mtip.offsetHeight;
   mtip.style.left=Math.max(6,r.left)+'px'; mtip.style.top=(r.bottom+8+h<innerHeight?r.bottom+8:Math.max(6,r.top-h-8))+'px';
-  return true;
 }
+function wbMiniTip(e){
+  const c=e.target.closest && e.target.closest('.wmb[data-mb]');
+  if(e.type==='pointerdown' && c && e.pointerType!=='mouse'){
+    clearTimeout(wbHold);
+    wbHold=setTimeout(()=>{ wbMiniShow(c); wbQuick=Date.now(); },420);
+    return true;
+  }
+  if(e.type==='pointermove' && e.pointerType!=='mouse'){ clearTimeout(wbHold); return false; }
+  if(!c){ mtip.hidden=true; return false; }
+  if(e.type==='click' && Date.now()-wbQuick<700){ mtip.hidden=true; return true; }
+  wbMiniShow(c); return true;
+}
+document.addEventListener('pointerup',()=>clearTimeout(wbHold));
+document.addEventListener('pointercancel',()=>clearTimeout(wbHold));
 /* tap a block in the minimap to pick or unpick it (the page stays where it is) */
-document.addEventListener('click',e=>{ const m=e.target.closest('.wmb[data-mb]'); if(!m) return; const B=+m.dataset.mb;
-  S.lxsel = S.lxsel.includes(B) ? S.lxsel.filter(x=>x!==B) : S.lxsel.concat(B).sort((x,y)=>x-y); lxSelSave(); LX.doneMsg=''; wbPaintSel(); renderLxPanel(); wbMiniTip(e); });
+document.addEventListener('click',e=>{
+  const gt=e.target.closest('#wgt'); if(gt){ S.wgridShow=!S.wgridShow; LS.set('wgrid.v1',S.wgridShow); renderWords(true); scrollTo(0,0); return; }
+  const m=e.target.closest('.wmb[data-mb]'); if(!m) return; const B=+m.dataset.mb;
+  S.lxsel = S.lxsel.includes(B) ? S.lxsel.filter(x=>x!==B) : S.lxsel.concat(B).sort((x,y)=>x-y); lxSelSave(); LX.doneMsg=''; wbPaintSel(); renderLxPanel(); });
 
 function wbPaintSel(){ view.querySelectorAll('.wmb[data-mb]').forEach(m=>m.classList.toggle('sel',S.lxsel.includes(+m.dataset.mb)));
   view.querySelectorAll('.wmw').forEach(w=>{ const n=[...w.querySelectorAll('.wmb.sel')].length, c=w.querySelector('.wmcap'); if(!c) return; let pk=c.querySelector('.pk'); if(!n){ if(pk) pk.remove(); return; } if(!pk){ pk=document.createElement('span'); pk.className='pk'; const hd=c.querySelector('.hd'); c.insertBefore(pk,hd); } pk.textContent=n+' picked'; }); const sel=new Set(S.lxsel); view.querySelectorAll('.wblk[data-blk]').forEach(b=>{ const on=sel.has(+b.dataset.blk); b.classList.toggle('sel',on); const s=b.querySelector('.wbs'); if(s) s.setAttribute('aria-pressed',String(on)); }); }

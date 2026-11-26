@@ -404,7 +404,9 @@ function renderWordGrid(ws,match,loan,byEp){
     h+=(byEp?'<svg class="wseam" aria-hidden="true"></svg>':'')+'</div></div></section>';
   }
   h+='</div>';
-  view.innerHTML=(WB?wbMiniHTML(items,bl,sel)+'<div id="lxPanel" class="lx"></div>':'')+h;
+  S.wgridShow=LS.get('wgrid.v1',false);
+  const wgt='<div class="wgf"><button class="tg" id="wgt">'+(S.wgridShow?'Hide the words grid':'Show the words grid')+'</button>'+(S.wgridShow?'':'<span class="wgfhint">the grid takes a moment to build — the map above has everything at a glance</span>')+'</div>';
+  view.innerHTML=(WB?wbMiniHTML(items,bl,sel)+'<div id="lxPanel" class="lx"></div>':'')+wgt+(S.wgridShow?h:'');
   if(WB) renderLxPanel();
   const hd=$('header'); if(hd) document.documentElement.style.setProperty('--hdr',Math.round(hd.getBoundingClientRect().height)+'px');
   fitWG(); requestAnimationFrame(wgSeams); if(document.fonts && document.fonts.ready) document.fonts.ready.then(()=>{ fitWG(); wgSeams(); });
