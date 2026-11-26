@@ -115,14 +115,15 @@ function wbMiniHTML(items,bl,sel){
     h+='<div class="wmw"><div class="wmsq">';
     for(let B=b/20;B<b/20+25;B++){ const k=bl[B], ch=items.slice(B*20,B*20+20);
       if(!ch.length){ h+='<i class="wmb wme"></i>'; continue; }
-      const td=today(), lcD=k&&k.lc?Math.floor((k.lc-36e5)/864e5):null, passed=k&&k.lc?td-lcD:null, till=k&&k.due!=null?k.due-td:null;
-      const frac=k&&k.act&&till!=null?(till<=0?1:Math.min(1,Math.max(.05,passed/(passed+till)))):0;
+      const td=today(), lcD=k&&k.lc?Math.floor((k.lc-36e5)/864e5):null, passed=k&&k.lc?td-lcD:null;
+      const iv=k&&k.cnt!=null?Math.max(1,ivb(k.cnt)):0;
+      const frac=k&&k.act&&iv?Math.min(1,Math.max(.05,passed/iv)):0;
       h+='<button class="wmb'+(k?wbCls(k):'')+(sel.has(B)?' sel':'')+'" data-mb="'+B+'" aria-label="Block '+(B+1)+'">'+
-        '<b class="wbf'+(frac>=1?' due':'')+'"'+(frac?' style="width:'+(frac*100).toFixed(1)+'%"':'')+'></b>'+
+        '<b class="wbf"'+(frac?' style="width:'+(frac*100).toFixed(1)+'%"':'')+'></b>'+
         ch.map(x=>{ const w=x.e.word, st=wbSt(w);
         return '<i class="'+(S.permw.has(w)?'p':st.hj?'h':S.easyw.has(w)?'e':(x.g && !st.k)?'g':'l')+'"></i>'; }).join('')+
         '<em>'+(B+1)+'</em>'+(k&&k.cnt?'<b class="wc">&times;'+k.cnt+'</b>':'')+
-        (passed!=null?'<i class="wd">'+passed+'/'+Math.max(0,till==null?0:till)+'</i>':'')+'</button>'; }
+        (passed!=null?'<i class="wd">'+passed+'/'+iv+'</i>':'')+'</button>'; }
     h+='</div><div class="wmcap"><b>'+(B0+1)+'–'+last+'</b>'+(nd?'<span class="du">'+nd+' due</span>':'')+(nn?'<span class="nw">'+nn+' new</span>':'')+(np?'<span class="pk">'+np+' picked</span>':'')+(nh?'<span class="hd">'+nh+' hard</span>':'')+'</div></div>';
   }
   return h+'</div>';

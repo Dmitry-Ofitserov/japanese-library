@@ -918,7 +918,7 @@ ruby{ruby-align:center;ruby-position:over}
 .wmb i{min-width:0;min-height:0}
 .wmb i.l{background:color-mix(in srgb,var(--fg) 30%,var(--surface))} .wmb i.g{background:color-mix(in srgb,var(--accent) 30%,var(--bg))}
 .wmb i.p{background:color-mix(in srgb,var(--warn) 55%,var(--surface))} .wmb i.h{background:#e5484d}
-.wmb.wbd{outline:1.5px solid #e5484d;outline-offset:0} .wmb.wbn{outline:1.5px solid var(--accent);outline-offset:0}
+.wmb.wbd{background:color-mix(in srgb,#e5484d 13%,var(--surface))} .wmb.wbn{background:color-mix(in srgb,var(--accent) 13%,var(--surface))}
 .wmb.sel{outline:2.5px solid var(--accent);outline-offset:1px;z-index:1}
 .wmb:hover{filter:brightness(1.2)}
 .wblk.flash{animation:wbfl 1.2s ease-out}
@@ -1085,11 +1085,11 @@ ruby{ruby-align:center;ruby-position:over}
 .syncbadge{position:fixed;bottom:8px;left:10px;z-index:8;font:500 11px var(--f-ui);color:var(--ok);opacity:.85;pointer-events:none}
 
 /* ---------- words tab: block cards, due fill, word tooltip, grid toggle ---------- */
-.wmb em{position:absolute;top:0;left:1px;display:block;font:700 9px/1.3 var(--f-mono);font-style:normal;color:var(--fg);text-shadow:0 0 3px var(--surface),0 0 3px var(--surface),0 0 2px var(--surface);pointer-events:none;text-align:left}
-.wmb .wc{position:absolute;top:0;right:1px;font:700 9px/1.3 var(--f-mono);color:var(--fg);text-shadow:0 0 3px var(--surface),0 0 3px var(--surface),0 0 2px var(--surface);pointer-events:none}
-.wmb .wd{position:absolute;bottom:0;right:1px;font:600 9px/1.3 var(--f-mono);color:var(--muted);text-shadow:0 0 3px var(--surface),0 0 2px var(--surface);pointer-events:none}
+.wmb em,.wmb .wc,.wmb .wd{color:var(--fg);font:700 9.5px/1.3 var(--f-mono);font-style:normal;text-shadow:-1px 0 0 var(--surface),1px 0 0 var(--surface),0 -1px 0 var(--surface),0 1px 0 var(--surface);pointer-events:none}
+.wmb em{position:absolute;top:0;left:1px;text-align:left}
+.wmb .wc{position:absolute;top:0;right:1px}
+.wmb .wd{position:absolute;bottom:0;right:1px}
 .wmb .wbf{position:absolute;left:0;top:0;bottom:0;width:0;background:color-mix(in srgb,var(--accent) 26%,transparent);pointer-events:none}
-.wmb .wbf.due{background:color-mix(in srgb,#e5484d 30%,transparent)}
 .wmb:hover{outline:1px solid var(--accent)}
 .wgf{display:flex;align-items:center;gap:10px;margin:6px 0}
 .wgfhint{font:400 12px var(--f-ui);color:var(--muted)}
