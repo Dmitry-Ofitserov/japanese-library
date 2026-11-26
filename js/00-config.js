@@ -1,8 +1,9 @@
 /* Deployment configuration — the only file you must edit before publishing. */
 
 /* Firebase web app credentials: Firebase console → Project settings → Your apps → SDK setup and configuration.
-   The apiKey is not a secret (it identifies the project); access is controlled by Firestore security rules. */
-const FIREBASE_CONFIG = {
+   The apiKey is not a secret (it identifies the project); access is controlled by Firestore security rules.
+   var, not const: js/22-db.js reads window.FIREBASE_CONFIG, and top-level const does not create a window property. */
+var FIREBASE_CONFIG = {
   apiKey: 'AIzaSyCzQVlvH7E1JfTVmNDvAuocSENTKZYyNCc',
   authDomain: 'japanese-library.firebaseapp.com',
   projectId: 'japanese-library',
