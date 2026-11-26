@@ -41,7 +41,7 @@ function miniTip(e){
   if(wbMiniTip(e)) return;
   const c=e.target.closest && e.target.closest('.mc'); if(!c){ mtip.hidden=true; return; }
   const all=S.mall||S.deck, i=+c.dataset.i, k=all[i]; if(!k){ mtip.hidden=true; return; }
-  mtip.innerHTML='<span class="mn">'+(k.frame?'#'+k.frame:'+'+(i-S.deck.length+1))+'</span><span class="jp" lang="ja">'+esc(k.k)+'</span><span>'+esc(k.kw||'not in your deck')+'</span>'; mtip.hidden=false;
+  mtip.classList.remove('wbt'); mtip.innerHTML='<span class="mn">'+(k.frame?'#'+k.frame:'+'+(i-S.deck.length+1))+'</span><span class="jp" lang="ja">'+esc(k.k)+'</span><span>'+esc(k.kw||'not in your deck')+'</span>'; mtip.hidden=false;
   /* always the same spot: left edge of the strip, just above it (below it when there is no room) */
   const r=$('.minirow').getBoundingClientRect(), h=mtip.offsetHeight;
   mtip.style.left=Math.max(6,r.left)+'px';

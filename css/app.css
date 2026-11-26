@@ -1093,12 +1093,14 @@ ruby{ruby-align:center;ruby-position:over}
 .wmb:hover{outline:1px solid var(--accent)}
 .wgf{display:flex;align-items:center;gap:10px;margin:6px 0}
 .wgfhint{font:400 12px var(--f-ui);color:var(--muted)}
-#mtip{max-width:360px;max-height:60vh;overflow:auto}
-#mtip .mnh{font:600 12px var(--f-mono);color:var(--fg);margin-bottom:6px}
-#mtip .mlw{display:grid;grid-template-columns:1fr 1fr;gap:2px 12px}
-#mtip .mrow{display:flex;align-items:baseline;gap:6px;min-width:0}
-#mtip .mrow i{width:8px;height:8px;border-radius:2px;flex:none;align-self:center}
-#mtip .mrow i.l{background:color-mix(in srgb,var(--fg) 30%,var(--surface))} #mtip .mrow i.g{background:color-mix(in srgb,var(--accent) 30%,var(--bg))}
-#mtip .mrow i.p{background:color-mix(in srgb,var(--warn) 55%,var(--surface))} #mtip .mrow i.h{background:#e5484d} #mtip .mrow i.e{background:#a9b8c8}
-#mtip .mrow span{font-size:14px;white-space:nowrap}
-#mtip .mrow small{font-size:11px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#mtip.wbt{max-width:420px;max-height:70vh;overflow:auto;display:block;white-space:normal;padding:8px}
+#mtip.wbt .mnh{font:600 12px/1.4 var(--f-mono);color:var(--fg);margin:0 0 8px 2px}
+#mtip.wbt .mlw{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:2px}
+#mtip.wbt .mrow{display:flex;flex-direction:column;justify-content:center;min-width:0;min-height:30px;padding:2px 8px;border:.5px solid var(--line);border-radius:2px;background:var(--surface);overflow:hidden}
+#mtip.wbt .mrow span{font-family:var(--f-jp);font-size:13px;line-height:1.2;color:var(--fg);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#mtip.wbt .mrow small{font-size:10.5px;line-height:1.2;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#mtip.wbt .mgg{background:color-mix(in srgb,var(--accent) 12%,var(--bg));border-color:color-mix(in srgb,var(--accent) 32%,transparent)}
+#mtip.wbt .mgp{background:linear-gradient(135deg,color-mix(in srgb,#8fa3b8 10%,var(--surface)) 0%,color-mix(in srgb,#8fa3b8 24%,var(--surface)) 50%,color-mix(in srgb,#8fa3b8 12%,var(--surface)) 100%);border-color:color-mix(in srgb,#8fa3b8 60%,var(--line));color:color-mix(in srgb,#5d7086 80%,var(--fg))}
+#mtip.wbt .mge{background:color-mix(in srgb,var(--warn) 55%,var(--surface))}
+#mtip.wbt .mgh{background:color-mix(in srgb,#e5484d 22%,var(--surface));border-color:color-mix(in srgb,#e5484d 60%,var(--line))}
+#mtip.wbt .mgp small,#mtip.wbt .mgp span{color:color-mix(in srgb,#5d7086 80%,var(--fg))}

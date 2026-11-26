@@ -130,16 +130,18 @@ function wbMiniHTML(items,bl,sel){
 }
 let wbHold=0, wbQuick=0;
 function wbMiniShow(c){
-  const B=+c.dataset.mb, k=wbBlocks()[B], td=today(); if(!k){ mtip.hidden=true; return; }
+  const B=+c.dataset.mb, k=wbBlocks()[B], td=today(); if(!k) return;
   const lcD=k.lc?Math.floor((k.lc-36e5)/864e5):null, passed=k.lc?td-lcD:null, till=k.due!=null?k.due-td:null;
-  const head='#'+(B+1)+(k.act?' · '+(k.isDue?'due':(till!=null?'in '+till+'d':''))+(k.cnt?' · ×'+k.cnt:'')+(passed!=null?' · '+passed+'d since':''):' · not started')+(k.hj?' · '+k.hj+' hard':'')+(S.lxsel.includes(B)?' · picked':'');
+  const iv=k.cnt!=null?Math.max(1,ivb(k.cnt)):null;
+  const head='#'+(B+1)+(k.act?' · '+(k.isDue?'due':(till!=null?'in '+till+'d':''))+(k.cnt?' · ×'+k.cnt:'')+(iv?' · '+passed+'/'+iv:''):' · not started')+(k.hj?' · '+k.hj+' hard':'')+(S.lxsel.includes(B)?' · picked':'');
   const rows=k.ch.map(x=>{ const e=x.e, st=wbSt(e.word);
     const cls=S.permw.has(e.word)?'p':st.hj?'h':S.easyw.has(e.word)?'e':(x.g && !st.k)?'g':'l';
-    return '<div class="mrow"><i class="'+cls+'"></i><span lang="ja">'+esc(e.word)+'</span><small>'+esc(((e.gloss||(e.means&&e.means[0])||'')+' · '+(e.reading||'')).slice(0,30))+'</small></div>'; }).join('');
-  mtip.innerHTML='<div class="mnh">'+head+'</div><div class="mlw">'+rows+'</div>'; mtip.hidden=false;
+    return '<div class="mrow mgc '+(S.permw.has(e.word)?'mgp':st.hj?'mgh':S.easyw.has(e.word)?'mge':(x.g && !st.k)?'mgg':'')+'"><span lang="ja">'+esc(e.word)+'</span><small>'+esc((e.gloss||(e.means&&e.means[0])||''))+'</small></div>'; }).join('');
+  mtip.classList.add('wbt'); mtip.innerHTML='<div class="mnh">'+head+'</div><div class="mlw">'+rows+'</div>'; mtip.hidden=false;
   const r=$('.wmini').getBoundingClientRect(), h=mtip.offsetHeight;
   mtip.style.left=Math.max(6,r.left)+'px'; mtip.style.top=(r.bottom+8+h<innerHeight?r.bottom+8:Math.max(6,r.top-h-8))+'px';
 }
+/* the tooltip stays put while the pointer moves inside the minimap — only its contents change; it hides on leaving */
 function wbMiniTip(e){
   const c=e.target.closest && e.target.closest('.wmb[data-mb]');
   if(e.type==='pointerdown' && c && e.pointerType!=='mouse'){
@@ -148,8 +150,13 @@ function wbMiniTip(e){
     return true;
   }
   if(e.type==='pointermove' && e.pointerType!=='mouse'){ clearTimeout(wbHold); return false; }
+  if(e.type==='click'){ if(!c){ mtip.hidden=true; return false; } if(Date.now()-wbQuick<700){ mtip.hidden=true; return true; } return false; }
+  if(e.type==='pointermove'){
+    if(!e.target.closest('.wmini')){ mtip.hidden=true; return false; }
+    if(c) wbMiniShow(c);
+    return true;
+  }
   if(!c){ mtip.hidden=true; return false; }
-  if(e.type==='click' && Date.now()-wbQuick<700){ mtip.hidden=true; return true; }
   wbMiniShow(c); return true;
 }
 document.addEventListener('pointerup',()=>clearTimeout(wbHold));
