@@ -117,7 +117,7 @@ function wbMiniHTML(items,bl,sel){
       if(!ch.length){ h+='<i class="wmb wme"></i>'; continue; }
       const td=today(), lcD=k&&k.lc?Math.floor((k.lc-36e5)/864e5):null, passed=k&&k.lc?td-lcD:null;
       const iv=k&&k.cnt!=null?Math.max(1,ivb(k.cnt)):0;
-      const frac=k&&k.act&&iv?Math.min(1,Math.max(.05,passed/iv)):0;
+      const frac=k&&k.act&&iv&&passed!=null?Math.min(1,Math.max(.05,passed/iv)):0;
       h+='<button class="wmb'+(k?wbCls(k):'')+(sel.has(B)?' sel':'')+'" data-mb="'+B+'" aria-label="Block '+(B+1)+'">'+
         '<b class="wbf"'+(frac?' style="width:'+(frac*100).toFixed(1)+'%"':'')+'></b>'+
         ch.map(x=>{ const w=x.e.word, st=wbSt(w);
