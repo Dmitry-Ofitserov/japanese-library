@@ -52,9 +52,9 @@ function authOverlay(onDone, auth){
 }
 
 async function openCloudStore(){
-  if(!window.firebase){ console.warn('Firebase SDK did not load — running without sync.'); return null; }
+  if(!window.firebase){ note('Sync off: Firebase SDK did not load (connection or extension blocking it).'); return null; }
   if(!window.FIREBASE_CONFIG || !FIREBASE_CONFIG.apiKey || FIREBASE_CONFIG.apiKey.indexOf('PASTE')===0){
-    console.warn('js/00-config.js has no Firebase credentials yet — running without sync.'); return null; }
+    note('Sync off: no Firebase credentials in js/00-config.js.'); return null; }
   try{
     if(!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
     const fs = firebase.firestore(), auth = firebase.auth();
@@ -65,7 +65,7 @@ async function openCloudStore(){
       const sub = auth.onAuthStateChanged(u=>{ if(u) finish(fsStore(fs,u.uid)); });
       authOverlay(u=>finish(u ? fsStore(fs,u.uid) : null), auth);
     });
-  }catch(e){ console.warn('Firebase init failed:',e); return null; }
+  }catch(e){ note('Sync off: Firebase init failed — '+(e&&e.message||e)); return null; }
 }
 
 async function initDb(){
