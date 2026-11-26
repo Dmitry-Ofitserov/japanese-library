@@ -140,9 +140,15 @@ function wbMiniShow(c){
   mtip.classList.add('wbt');
   mtip.innerHTML='<div class="wblk'+wbCls(k)+(S.lxsel.includes(B)?' sel':'')+'">'+wbStrip(k,S.lxsel.includes(B))+'<div class="wbc">'+cells+'</div></div>';
   mtip.hidden=false;
-  /* place beside the hovered block: right side first, then left; clamped below the header and inside the screen */
+  /* place beside the hovered block: right side first, then left; clamped below the header and inside the screen.
+     The box never scrolls — if the natural height exceeds the space under the header, the cells compact to fit. */
   const br=c.getBoundingClientRect(), hr=(document.querySelector('header')||document.body).getBoundingClientRect();
-  const tw=mtip.offsetWidth, th=mtip.offsetHeight, topMin=hr.bottom+6, topMax=Math.max(topMin,innerHeight-th-6);
+  const topMin=hr.bottom+6, avail=Math.max(200,innerHeight-topMin-8);
+  if(mtip.offsetHeight>avail){
+    const c0=mtip.querySelector('.wgc'), base=c0?c0.offsetHeight:64;
+    mtip.style.setProperty('--chs',Math.max(26,Math.floor(base*avail/mtip.offsetHeight))+'px');
+  } else mtip.style.removeProperty('--chs');
+  const tw=mtip.offsetWidth, th=mtip.offsetHeight, topMax=Math.max(topMin,innerHeight-th-6);
   let left=br.right+8;
   if(left+tw>innerWidth-6) left=br.left-tw-8;
   if(left<6) left=6;
