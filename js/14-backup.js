@@ -55,8 +55,11 @@ function applyBackup(){
   if(o.srs && typeof o.srs.c==='object'){ S.srs=new Map(Object.entries(o.srs.c)); if(o.srs.t0) S.t0=o.srs.t0; srsPersist();
     if(S.db && S.srsReady){ const docs=new Map(); S.srs.forEach((v,k)=>{ const d=srsDoc(k); if(!docs.has(d)) docs.set(d,{}); docs.get(d)[k]=v; });
       docs.forEach((c,d)=>S.db.doc('srs/'+d).set({c}).then(()=>S.srsDocs.add(d)).catch(()=>{})); if(S.t0) S.db.doc('srs/meta').set({t0:S.t0}).catch(()=>{}); } }
-  if(o.wb && typeof o.wb==='object'){ Object.entries(o.wb).forEach(([k,st])=>{ if(st && st.v!=null){ S.wb.set(k,st); S.wbPend.set(k,st); } }); wbPersist();
-    if(S.db && S.wbReady){ const pend=[...S.wbPend]; S.wbPend.clear(); pend.forEach(([k,v])=>wbWrite(k,v)); } }
+  if(o.wb && typeof o.wb==='object'){ Object.entries(o.wb).forEach(([k,st])=>{ if(st && st.v!=null) S.wb.set(k,st); }); wbPersist();
+    /* replace the cloud wb documents wholesale, so keys removed from the backup die in the cloud too */
+    if(S.db){ const docs=new Map(); S.wb.forEach((v,k)=>{ const d=wbDoc(k); if(!docs.has(d)) docs.set(d,{}); docs.get(d)[k]=v; });
+      S.wbDocs.forEach(d=>{ if(!docs.has(d)) docs.set(d,{}); });
+      docs.forEach((c,d)=>{ S.db.doc('wb/'+d).set({c}).then(()=>S.wbDocs.add(d)).catch(()=>{}); }); } }
   S.bkPending=null; S.tickAt=0;
   derive(); fillEpSelect(); updateProgress();
   renderOptions(); bkMsg('Backup restored.');
