@@ -4,7 +4,7 @@ function backupObject(){
   const learned={}; S.localSaved.forEach(id=>{ if(meta(id)) learned[id]=[...getLearned(id)].sort((a,b)=>a-b); });
   const at={}; S.at.forEach((v,k)=>{ at[k]=v; }); const fz={}; S.fz.forEach((v,k)=>{ fz[k]=v; });
   const srs={}; S.srs.forEach((v,k)=>{ srs[k]=v; });
-  return { app:BK_APP, version:1, exportedAt:new Date().toISOString(), learned, at, fz, srs:{t0:S.t0,c:srs},
+  return { app:BK_APP, version:1, exportedAt:new Date().toISOString(), learned, at, fz, srs:{t0:S.t0,c:srs}, wb:Object.fromEntries(S.wb),
     settings:{ hl:S.hl, khl:S.khl, excl:[...S.excl], norv:[...S.norv], bucket:S.bucket, eord:S.eord, permw:[...S.permw], custom:S.custom, names:S.nuser, loans:S.luser, kmode:S.kmode, wscale:S.wfull?'full':'stage', gopt:S.g, wtab:S.wtab, fur:S.fur, gram:S.gram, tr:S.tr, vol:S.vol } };
 }
 function bkMsg(t,bad){ const m=$('#bkmsg'); if(m){ m.textContent=t; m.className='bkmsg'+(bad?' bad':''); } }
@@ -55,6 +55,8 @@ function applyBackup(){
   if(o.srs && typeof o.srs.c==='object'){ S.srs=new Map(Object.entries(o.srs.c)); if(o.srs.t0) S.t0=o.srs.t0; srsPersist();
     if(S.db && S.srsReady){ const docs=new Map(); S.srs.forEach((v,k)=>{ const d=srsDoc(k); if(!docs.has(d)) docs.set(d,{}); docs.get(d)[k]=v; });
       docs.forEach((c,d)=>S.db.doc('srs/'+d).set({c}).then(()=>S.srsDocs.add(d)).catch(()=>{})); if(S.t0) S.db.doc('srs/meta').set({t0:S.t0}).catch(()=>{}); } }
+  if(o.wb && typeof o.wb==='object'){ Object.entries(o.wb).forEach(([k,st])=>{ if(st && st.v!=null){ S.wb.set(k,st); S.wbPend.set(k,st); } }); wbPersist();
+    if(S.db && S.wbReady){ const pend=[...S.wbPend]; S.wbPend.clear(); pend.forEach(([k,v])=>wbWrite(k,v)); } }
   S.bkPending=null; S.tickAt=0;
   derive(); fillEpSelect(); updateProgress();
   renderOptions(); bkMsg('Backup restored.');
