@@ -1093,7 +1093,11 @@ ruby{ruby-align:center;ruby-position:over}
 .wmb:hover{outline:1px solid var(--accent)}
 .wgf{display:flex;align-items:center;gap:10px;margin:6px 0}
 .wgfhint{font:400 12px var(--f-ui);color:var(--muted)}
-#mtip.wbt{display:block;white-space:normal;padding:8px;width:min(380px,calc(100vw - 24px));max-height:70vh;overflow:auto;container-type:inline-size;--ch:calc((100cqw - 26px)/10)}
+#mtip.wbt{display:block;white-space:normal;padding:8px;width:min(420px,calc(100vw - 24px));max-height:70vh;overflow:auto;container-type:inline-size;--ch:calc((100cqw - 26px)/10)}
 #mtip.wbt .wblk{border-color:var(--line)}
 #mtip.wbt .wgc,#mtip.wbt .wbs{cursor:default}
+/* taller cells: the word smaller on top, its translation right underneath */
+#mtip.wbt .wgc{display:flex;flex-direction:column;justify-content:center;align-items:center;gap:1px;height:auto;min-height:calc(var(--ch)*1.7);padding:2px 3px}
+#mtip.wbt .wgc span{position:static;transform:none;font-size:min(12cqw,calc(56cqw/var(--n)))}
+#mtip.wbt .wgc small{font:400 9.5px/1.25 var(--f-ui);color:var(--muted);max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 

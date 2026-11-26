@@ -135,7 +135,8 @@ function wbMiniShow(c){
   const cells=k.ch.map(it=>{ const e=it.e, st=wbSt(e.word), pv=it.g && !st.k;
     const n=[...e.word].reduce((a,ch)=>a+(/[ -ÿ]/.test(ch)?0.6:1),0);
     const cls='wgc'+(S.permw.has(e.word)?' wgperm':S.easyw.has(e.word)?' wceasy':pv?' wgh':'')+(st.hj?' wghj':'')+(st.he?' wghe':'');
-    return '<button class="'+cls+'"><span lang="ja" style="--n:'+n.toFixed(1)+'">'+esc(e.word)+'</span></button>'; }).join('');
+    const gl=(e.gloss||(e.means&&e.means[0])||'').replace(/^.*\/ /,'');
+    return '<button class="'+cls+'"><span lang="ja" style="--n:'+n.toFixed(1)+'">'+esc(e.word)+'</span><small>'+esc(gl)+'</small></button>'; }).join('');
   mtip.classList.add('wbt');
   mtip.innerHTML='<div class="wblk'+wbCls(k)+(S.lxsel.includes(B)?' sel':'')+'">'+wbStrip(k,S.lxsel.includes(B))+'<div class="wbc">'+cells+'</div></div>';
   mtip.hidden=false;
