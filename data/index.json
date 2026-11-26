@@ -12,6 +12,16 @@
    "short": "JoJo P1 E01"
   },
   {
+   "id": "jojo-p1-opening",
+   "series": "JoJo's Bizarre Adventure",
+   "seriesId": "jojo",
+   "title": "Part 1 · Opening",
+   "kind": "episode",
+   "file": "data/jojo-p1-opening.json",
+   "count": 9,
+   "short": "JoJo P1 OP"
+  },
+  {
    "id": "jojo-p1-e02",
    "series": "JoJo's Bizarre Adventure",
    "seriesId": "jojo",
