@@ -1,0 +1,53 @@
+{
+ "version": 1,
+ "groups": [
+  {
+   "id": "jojo-p1-e01",
+   "series": "JoJo's Bizarre Adventure",
+   "seriesId": "jojo",
+   "title": "Part 1 · Episode 1",
+   "kind": "episode",
+   "file": "data/jojo-p1-e01.json",
+   "count": 292,
+   "short": "JoJo P1 E01"
+  },
+  {
+   "id": "jojo-p1-e02",
+   "series": "JoJo's Bizarre Adventure",
+   "seriesId": "jojo",
+   "title": "Part 1 · Episode 2",
+   "kind": "episode",
+   "file": "data/jojo-p1-e02.json",
+   "count": 238,
+   "short": "JoJo P1 E02"
+  },
+  {
+   "id": "excel-notebook",
+   "series": "My notes",
+   "seriesId": "notes",
+   "title": "Excel notebook",
+   "kind": "notebook",
+   "preLearned": true,
+   "file": "data/excel-notebook.json",
+   "count": 28,
+   "kanji": 3000,
+   "short": "Excel notes"
+  }
+ ],
+ "names": [
+  "ジョナサン",
+  "ジョースター",
+  "ジョジョ",
+  "ディオ",
+  "ヂオ",
+  "ブランドー",
+  "エリナ",
+  "ペンドルトン",
+  "ダリオ",
+  "ダニー",
+  "ミカサ",
+  "ジョルノジョバアーナ",
+  "鳳凰院凶真",
+  "スピードワゴン"
+ ]
+}

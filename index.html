@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Anime Sentence Library</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;500;700&amp;family=Hanken+Grotesk:wght@400;500;600&amp;family=IBM+Plex+Mono:wght@400;500&amp;display=swap">
+<link rel="stylesheet" href="css/app.css">
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+</head>
+<body>
+<div class="wrap" id="app">
+<header><div class="hin">
+  <div class="hst" id="hst" aria-label="Learned today and in the last 7 days"></div>
+  <div class="tabs" role="tablist" aria-label="Views">
+    <button class="tab" role="tab" data-v="ep" aria-selected="true" aria-label="Lines" title="Lines · learned lines in all episodes"><svg viewBox="0 0 20 20" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4.5h12a1.5 1.5 0 0 1 1.5 1.5v6.5A1.5 1.5 0 0 1 16 14H9l-3.5 3v-3H4a1.5 1.5 0 0 1-1.5-1.5V6A1.5 1.5 0 0 1 4 4.5z"/><path d="M6 8h8M6 10.8h5"/></svg><span id="nLines"></span></button>
+    <button class="tab" role="tab" data-v="words" aria-selected="false" aria-label="Words" title="Words · learned words"><b class="ti" lang="ja">あ</b><span id="nWords"></span></button>
+    <button class="tab" role="tab" data-v="kanji" aria-selected="false" aria-label="Kanji" title="Kanji · kanji seen in learned lines"><b class="ti" lang="ja">字</b><span id="nKanji"></span></button>
+    <button class="tab" role="tab" data-v="review" aria-selected="false" aria-label="Review" title="Review · cards due now"><svg viewBox="0 0 20 20" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M15.5 7.5A6 6 0 0 0 4.6 6.4"/><path d="M15.8 3.6v3.9h-3.9"/><path d="M4.5 12.5a6 6 0 0 0 10.9 1.1"/><path d="M4.2 16.4v-3.9h3.9"/></svg><span id="nDue"></span></button>
+    <button class="tab ico" role="tab" data-v="stats" aria-selected="false" aria-label="Stats" title="Stats"><svg viewBox="0 0 20 20" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 16V10M8.7 16V5M13.3 16v-8M18 16H2"/></svg></button>
+    <button class="tab ico" role="tab" data-v="options" aria-selected="false" aria-label="Options" title="Options"><svg viewBox="0 0 20 20" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="10" r="2.6"/><path d="M10 2.5v2.2M10 15.3v2.2M2.5 10h2.2M15.3 10h2.2M4.7 4.7l1.6 1.6M13.7 13.7l1.6 1.6M4.7 15.3l1.6-1.6M13.7 6.3l1.6-1.6"/></svg></button>
+  </div>
+</div><div class="hbars">
+  <div class="pb" id="pb-words" data-stage="1">
+    <details class="stg"><summary><span class="pl">Words</span><span class="sname" id="sname"></span><span class="eta" id="weta"></span><span class="chev" aria-hidden="true">▾</span></summary><div class="stl" id="stl"></div></details>
+    <div class="pcount"><span class="dn pmn" hidden title="Permanently learned"><i></i><b></b><em> permanent</em></span><span class="dn emn" hidden title="Easy"><i></i><b></b><em> easy</em></span><span class="dn" hidden><i></i><b></b><em> due</em></span><span class="potn"><i class="pd"></i><b></b></span><span class="tot"></span><span class="plus"></span></div>
+    <div class="track" role="progressbar" aria-label="Words learned" aria-valuemin="0" aria-valuenow="0"><i class="pot"></i><i class="ghost"></i><i class="fill"></i><i class="due"></i><i class="easyf" hidden></i><i class="permf" hidden></i><i class="pbm" hidden></i><span class="ticks" hidden></span></div>
+  </div>
+  <div class="pb" id="pb-kanji">
+    <div class="pt"><span class="pl">Kanji</span><span class="eta" id="keta"></span></div>
+    <div class="pcount"><span class="dn pmn" hidden title="Permanently learned"><i></i><b></b><em> permanent</em></span><span class="dn emn" hidden title="Easy"><i></i><b></b><em> easy</em></span><span class="dn" hidden><i></i><b></b><em> due</em></span><span class="potn"><i class="pd"></i><b></b></span><span class="tot"></span><span class="plus"></span></div>
+    <div class="track" role="progressbar" aria-label="Kanji learned" aria-valuemin="0" aria-valuemax="3000" aria-valuenow="0"><i class="pot"></i><i class="ghost"></i><i class="fill"></i><i class="due"></i><i class="easyf" hidden></i><i class="permf" hidden></i><i class="notch k" style="left:73.333%"><b>2200</b></i></div>
+  </div>
+</div>
+</header>
+
+<section class="strip">
+  <div class="row" id="rowEp">
+    <select id="epSel" aria-label="Episode"></select>
+    <button class="tg" id="epAdd" title="Add your own episode: lines, furigana, explanations and translations">+ Episode</button>
+    <button class="tg" id="epEdit" hidden title="Edit this episode">Edit</button>
+    <select id="flt" aria-label="Filter lines"><option value="all">All lines</option><option value="open">Not learned</option><option value="done">Learned</option></select>
+    <button class="tg" id="tFur" aria-pressed="true">Furigana</button>
+    <button class="tg" id="tGram" aria-pressed="true">Grammar</button>
+    <button class="tg" id="tTr" aria-pressed="true">Translation</button>
+    <div class="prog"><span id="progTxt"></span><div class="bar"><i id="barFill"></i></div></div>
+  </div>
+  <div class="row" id="rowWords" hidden>
+    <div class="seg" role="group" aria-label="Words, loanwords or names"><button data-wt="words" aria-pressed="true">Words</button><button data-wt="loans" aria-pressed="false">Loanwords</button><button data-wt="names" aria-pressed="false">Names</button></div>
+    <div class="seg" role="group" aria-label="Square size" id="wsqSeg"><button data-wsq="500" aria-pressed="true" title="Five blocks to a row: whole 500-word squares">5 a row</button><button data-wsq="3" aria-pressed="false" title="Three blocks to a row, bigger cards">3 a row</button><button data-wsq="2" aria-pressed="false" title="Two blocks to a row, biggest cards for a phone">2 a row</button><button data-wsq="1000" aria-pressed="false" title="Two 500-word squares side by side on a wide screen">2×500</button></div><div class="seg" role="group" aria-label="Grid width" id="wfwSeg"><button data-fullw="0" title="Grid as wide as the header">Fit</button><button data-fullw="1" title="Grid across the whole window">Full width</button></div>
+    <input type="search" id="wq" placeholder="Search words, readings, meanings" aria-label="Search words">
+    <select id="wsort" aria-label="Sort words" hidden><option value="first">Order of appearance</option><option value="kana">Kana A–Z</option><option value="seen">Most used</option></select>
+  </div>
+  <div class="row" id="rowKanji" hidden>
+    <input type="search" id="kq" placeholder="Search kanji, keyword, reading, story" aria-label="Search kanji"><select id="kf" aria-label="Highlight kanji"><option value="all">All kanji</option><option value="l">Learned</option><option value="p">Not learned, in your lines</option><option value="n">Not learned</option></select><div class="seg" role="group" aria-label="Kanji columns" id="kcolSeg"><button data-kcol="0" title="200 kanji across the full width: each 400 square split in two">200</button><button data-kcol="1">400</button><button data-kcol="2">2×400</button><button data-kcol="3">3×400</button><button data-kcol="4">4×400</button></div><div class="seg" role="group" aria-label="Grid width" id="kfwSeg"><button data-fullw="0" title="Grid as wide as the header">Fit</button><button data-fullw="1" title="Grid across the whole window">Full width</button></div>
+  </div>
+  <div class="row">
+    <label class="vol">Volume <input type="range" id="vol" min="0" max="1" step="0.05" aria-label="Volume"> <output id="volv"></output></label>
+    <span id="note" hidden></span>
+  </div>
+</section>
+<main id="view" aria-live="polite"></main>
+<div id="mtip" hidden></div>
+<div id="toast" role="status" hidden></div>
+<div id="lbar" hidden role="region" aria-label="Listening"><button class="lbw" data-lx="open" title="Open the listening page"></button><span class="lbt"></span><button data-lx="pp" aria-label="Pause"></button><button data-lx="stop" aria-label="Stop"><svg viewBox="0 0 16 16" aria-hidden="true"><rect x="3" y="3" width="10" height="10" rx="1.5"/></svg></button></div>
+<button id="toNext" class="tonext" hidden aria-label="Go to the first unlearned line"><svg viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3v9M4 8.5l4 4 4-4"/></svg><span>First unlearned</span></button>
+<div class="sheet" id="kd" hidden role="dialog" aria-label="Kanji details"></div>
+</div>
+
+<script src="js/00-config.js"></script>
+<script src="js/01-core.js"></script>
+<script src="js/02-kanji-helpers.js"></script>
+<script src="js/03-data.js"></script>
+<script src="js/04-speech.js"></script>
+<script src="js/05-lines.js"></script>
+<script src="js/06-corpus.js"></script>
+<script src="js/07-kanji-index.js"></script>
+<script src="js/08-words-names.js"></script>
+<script src="js/09-listening.js"></script>
+<script src="js/10-words-page.js"></script>
+<script src="js/11-kanji-map.js"></script>
+<script src="js/12-highlight-options.js"></script>
+<script src="js/13-time.js"></script>
+<script src="js/14-backup.js"></script>
+<script src="js/15-progress.js"></script>
+<script src="js/16-stats.js"></script>
+<script src="js/17-catalog-srs.js"></script>
+<script src="js/18-review.js"></script>
+<script src="js/19-word-reviews.js"></script>
+<script src="js/20-custom.js"></script>
+<script src="js/21-routing.js"></script>
+<script src="js/22-db.js"></script>
+<script src="js/23-main.js"></script>
+</body>
+</html>
