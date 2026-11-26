@@ -140,8 +140,14 @@ function wbMiniShow(c){
   mtip.classList.add('wbt');
   mtip.innerHTML='<div class="wblk'+wbCls(k)+(S.lxsel.includes(B)?' sel':'')+'">'+wbStrip(k,S.lxsel.includes(B))+'<div class="wbc">'+cells+'</div></div>';
   mtip.hidden=false;
-  const r=$('.wmini').getBoundingClientRect(), h=mtip.offsetHeight;
-  mtip.style.left=Math.max(6,r.left)+'px'; mtip.style.top=(r.bottom+8+h<innerHeight?r.bottom+8:Math.max(6,r.top-h-8))+'px';
+  /* place beside the hovered block: right side first, then left; clamped below the header and inside the screen */
+  const br=c.getBoundingClientRect(), hr=(document.querySelector('header')||document.body).getBoundingClientRect();
+  const tw=mtip.offsetWidth, th=mtip.offsetHeight, topMin=hr.bottom+6, topMax=Math.max(topMin,innerHeight-th-6);
+  let left=br.right+8;
+  if(left+tw>innerWidth-6) left=br.left-tw-8;
+  if(left<6) left=6;
+  let top=Math.min(Math.max(br.top,topMin),topMax);
+  mtip.style.left=left+'px'; mtip.style.top=top+'px';
 }
 /* the tooltip stays put while the pointer moves inside the minimap — only its contents change; it hides on leaving */
 function wbMiniTip(e){
