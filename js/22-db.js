@@ -74,6 +74,7 @@ async function initDb(){
   const db = await openCloudStore();
   if(!db) return;
   S.db = db; srsListen(db); wbListen(db); kstoryListen(db);
+  try{ const b=document.createElement('div'); b.className='syncbadge'; b.textContent='sync on'; document.body.appendChild(b); }catch(e){}
   const timer = setTimeout(()=>note('The shared store has not answered yet. Ticks are kept on this device meanwhile.'),10000);
   db.collection('learned').onSnapshot(snap=>{
     if(!snap.metadata.fromCache) clearTimeout(timer);
